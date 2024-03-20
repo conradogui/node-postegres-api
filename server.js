@@ -1,19 +1,27 @@
-import Fastify from 'fastify'
+import fastify from 'fastify';
+import cors from 'cors';
+import userRoutes from './routes/user.routes.js';
 
-const fastify = Fastify({
-    logger: true
-  })
+const app = fastify({ logger: true });
 
-const PORT = 5005
+app.register(cors, {
+    origin: '*',
+});
 
-fastify.get('/', (request, reply) => {
-    reply.send(`${address}`)
-})
-
-fastify.listen({ port: PORT}, (err, address) => {
-    if(err) {
-        console.error('Erro ao subir o servdor', err)
-        return;
+app.get('/', (res, reply) => {
+    return {
+        "code": 200,
+        status: "UP",
+        message: "Servidor Rodando!"
     }
-    console.log(`Server is now listening on ${address}`);
 })
+
+app.register(userRoutes);
+
+app.listen({ host: 'localhost', port: `5000` }, (err, address) => {
+    if (err) {
+        app.log.error(err);
+        process.exit(1);
+    }
+    console.log(`Server listening on ${address}`);
+});
